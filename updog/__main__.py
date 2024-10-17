@@ -34,6 +34,12 @@ def parse_arguments():
     parser.add_argument('--password', type=str, default='', help='Use a password to access the page. (No username)')
     parser.add_argument('--ssl', action='store_true', help='Use an encrypted connection')
     parser.add_argument('--version', action='version', version='%(prog)s v'+VERSION)
+    parser.add_argument(
+        '--cert', '-C',
+        nargs=2,
+        metavar=('CERT', 'KEY'),
+        help="Provide your own certificate and key for TLS. Usage: --cert cert.pem key.pem"
+    )
 
     args = parser.parse_args()
 
@@ -174,8 +180,15 @@ def main():
     signal.signal(signal.SIGINT, handler)
 
     ssl_context = None
+    # Check if cert argument is passed
     if args.ssl:
-        ssl_context = 'adhoc'
+        # Use own certs if they are provided
+        if args.cert:
+            cert_path, key_path = args.cert
+            ssl_context = (cert_path, key_path)
+        else:
+            # Default to 'adhoc' if no cert is provided
+            ssl_context = 'adhoc'
 
     run_simple("0.0.0.0", int(args.port), app, ssl_context=ssl_context)
 
