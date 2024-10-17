@@ -23,7 +23,7 @@ Install using pip:
 
 ## Usage
 
-`updog [-d DIRECTORY] [-p PORT] [--password PASSWORD] [--ssl]`
+`updog [-d DIRECTORY] [-p PORT] [--password PASSWORD] [--ssl] [--cert certificate.cer certificate.key]`
 
 | Argument                            | Description                                      |
 |-------------------------------------|--------------------------------------------------| 
@@ -31,6 +31,7 @@ Install using pip:
 | -p PORT, --port PORT                | Port to serve [Default=9090]                     |
 | --password PASSWORD                 | Use a password to access the page. (No username) |
 | --ssl                               | Enable transport encryption via SSL              |
+| --cert                              | Provide your own certificate and key             |
 | --version                           | Show version                                     |
 | -h, --help                          | Show help                                        |
 
@@ -59,6 +60,10 @@ enter the password in the password field.
 **Use an SSL connection:**
 
 `updog --ssl`
+
+**Use an SSL connection with bespoke certificates:**
+
+`updog --ssl --cert certificate.cer certificate.key`
 
 ## Thanks
 
