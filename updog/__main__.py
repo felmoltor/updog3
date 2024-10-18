@@ -73,14 +73,13 @@ def main():
     @auth.login_required
     def home(path):
         # If there is a path parameter and it is valid
+        displayed_path = path if path is not None else "."
         if path and is_valid_subpath(path, base_directory):
             # Take off the trailing '/'
             path = os.path.normpath(path)
             requested_path = os.path.join(base_directory, path)
             if (args.fullpath):
                 displayed_path = requested_path
-            else:
-                displayed_path=path if path is not None else "."
 
             # If directory
             if os.path.isdir(requested_path):
