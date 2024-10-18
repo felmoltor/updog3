@@ -25,9 +25,10 @@ Install using pip:
 
 ```bash
 cd sc0tfree-updog
-pipenv install 
-pipenv shell
 pipenv install .
+pipenv shell
+which updog # to verify you are using the module installed with pipenv
+updog --version
 ```
 
 After this, you do not use `python setup.py install` as it has some errors that prevents copying the Flask templates and the server will not run. Use `pipenv install .` instead to install updog as a module.
