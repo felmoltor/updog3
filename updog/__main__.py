@@ -33,6 +33,7 @@ def parse_arguments():
                         help='Port to serve [Default=9090]')
     parser.add_argument('--password', type=str, default='', help='Use a password to access the page. (No username)')
     parser.add_argument('--ssl', action='store_true', help='Use an encrypted connection')
+    parser.add_argument('--fullpath', action='store_true', help='Display the full path of the folder uploading to',default=False)
     parser.add_argument('--version', action='version', version='%(prog)s v'+VERSION)
     parser.add_argument(
         '--cert', '-C',
@@ -76,6 +77,10 @@ def main():
             # Take off the trailing '/'
             path = os.path.normpath(path)
             requested_path = os.path.join(base_directory, path)
+            if (args.fullpath):
+                displayed_path = requested_path
+            else:
+                displayed_path=path if path is not None else "."
 
             # If directory
             if os.path.isdir(requested_path):
@@ -117,7 +122,7 @@ def main():
                 abort(403, 'Read Permission Denied: ' + requested_path)
 
             return render_template('home.html', files=directory_files, back=back,
-                                   directory=requested_path, is_subdirectory=is_subdirectory, version=VERSION)
+                                   directory=displayed_path, is_subdirectory=is_subdirectory, version=VERSION)
         else:
             return redirect('/')
 

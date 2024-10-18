@@ -35,7 +35,7 @@ After this, you do not use `python setup.py install` as it has some errors that 
 
 ## Usage
 
-`updog [-d DIRECTORY] [-p PORT] [--password PASSWORD] [--ssl] [--cert certificate.cer certificate.key]`
+`updog [-d DIRECTORY] [-p PORT] [--password PASSWORD] [--ssl] [--cert certificate.pem key.pem] [--fullpath]`
 
 | Argument                            | Description                                      |
 |-------------------------------------|--------------------------------------------------| 
@@ -44,6 +44,7 @@ After this, you do not use `python setup.py install` as it has some errors that 
 | --password PASSWORD                 | Use a password to access the page. (No username) |
 | --ssl                               | Enable transport encryption via SSL              |
 | --cert                              | Provide your own certificate and key             |
+| --fullpath                          | Display the full path of the folder uploading to |
 | --version                           | Show version                                     |
 | -h, --help                          | Show help                                        |
 
