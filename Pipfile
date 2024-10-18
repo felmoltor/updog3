@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+colorama = "*"
+flask = "*"
+flask-httpauth = "*"
+werkzeug = "*"
+pyopenssl = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.13"

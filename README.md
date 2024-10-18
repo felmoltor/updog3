@@ -21,6 +21,17 @@ Install using pip:
 
 `pip3 install updog`
 
+### Install from source with pipenv
+
+```bash
+cd sc0tfree-updog
+pipenv install 
+pipenv shell
+pipenv install .
+```
+
+After this, you do not use `python setup.py install` as it has some errors that prevents copying the Flask templates and the server will not run. Use `pipenv install .` instead to install updog as a module.
+
 ## Usage
 
 `updog [-d DIRECTORY] [-p PORT] [--password PASSWORD] [--ssl] [--cert certificate.cer certificate.key]`
@@ -63,7 +74,9 @@ enter the password in the password field.
 
 **Use an SSL connection with bespoke certificates:**
 
-`updog --ssl --cert certificate.cer certificate.key`
+`updog --ssl --cert certificate.pem key.pem`
+
+For a LetsEncrypt certificate, the files will be in /etc/letsencrypt/live/[domain]/cert.pem and /etc/letsencrypt/live/[domain]/privatekey.pem (careful, these are just links to ../../archive/ folder, so if you are copying those to another folder, ensure you copy the archive files.)
 
 ## Thanks
 
