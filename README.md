@@ -24,7 +24,8 @@ Install using pip:
 ### Install from source with pipenv
 
 ```bash
-cd sc0tfree-updog
+git clone https://github.com/felmoltor/updog
+cd updog
 pipenv install .
 pipenv shell
 which updog # to verify you are using the module installed with pipenv

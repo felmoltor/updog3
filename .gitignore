@@ -177,3 +177,4 @@ fabric.properties
 Pipfile.lock
 *.pem
 .vscode/*
+test*

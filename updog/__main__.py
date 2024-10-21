@@ -1,4 +1,5 @@
 import os
+from os.path import basename
 import signal
 import argparse
 
@@ -34,6 +35,7 @@ def parse_arguments():
     parser.add_argument('--password', type=str, default='', help='Use a password to access the page. (No username)')
     parser.add_argument('--ssl', action='store_true', help='Use an encrypted connection')
     parser.add_argument('--fullpath', action='store_true', help='Display the full path of the folder uploading to',default=False)
+    parser.add_argument('--upload', choices=['only','enabled','disabled'], help='Upload mode: only, enabled, disabled (default: enabled)', default='enabled')
     parser.add_argument('--version', action='version', version='%(prog)s v'+VERSION)
     parser.add_argument(
         '--cert', '-C',
@@ -73,13 +75,15 @@ def main():
     @auth.login_required
     def home(path):
         # If there is a path parameter and it is valid
-        displayed_path = path if path is not None else "."
+        displayed_path = None
         if path and is_valid_subpath(path, base_directory):
             # Take off the trailing '/'
             path = os.path.normpath(path)
             requested_path = os.path.join(base_directory, path)
             if (args.fullpath):
                 displayed_path = requested_path
+            else:
+                displayed_path = path
 
             # If directory
             if os.path.isdir(requested_path):
@@ -103,11 +107,19 @@ def main():
                     mimetype = None
 
                 try:
-                    return send_file(requested_path, mimetype=mimetype, as_attachment=send_as_attachment)
+                    if (args.upload != 'only'):
+                        return send_file(requested_path, mimetype=mimetype, as_attachment=send_as_attachment)
+                    else:
+                        abort(403, 'Only Uploads Available')
                 except PermissionError:
-                    abort(403, 'Read Permission Denied: ' + requested_path)
+                    abort(403, 'Read Permission Denied: ' + path)
 
         else:
+            # update displayed path:
+            if (args.fullpath):
+                displayed_path = base_directory
+            else:
+                displayed_path = path if path is not None else "[ROOT]"
             # Root home configuration
             is_subdirectory = False
             requested_path = base_directory
@@ -120,8 +132,15 @@ def main():
             except PermissionError:
                 abort(403, 'Read Permission Denied: ' + requested_path)
 
-            return render_template('home.html', files=directory_files, back=back,
-                                   directory=displayed_path, is_subdirectory=is_subdirectory, version=VERSION)
+            print("Upload: "+ args.upload)
+            return render_template('home.html', 
+                                   files=directory_files, 
+                                   back=back,
+                                   directory=requested_path, 
+                                   displayed_directory=displayed_path, 
+                                   is_subdirectory=is_subdirectory, 
+                                   upload=args.upload,
+                                   version=VERSION)
         else:
             return redirect('/')
 
@@ -132,34 +151,40 @@ def main():
     @auth.login_required
     def upload():
         if request.method == 'POST':
+            if  args.upload != 'disallowed':
 
-            # No file part - needs to check before accessing the files['file']
-            if 'file' not in request.files:
-                return redirect(request.referrer)
-
-            path = request.form['path']
-            # Prevent file upload to paths outside of base directory
-            if not is_valid_upload_path(path, base_directory):
-                return redirect(request.referrer)
-
-            for file in request.files.getlist('file'):
-
-                # No filename attached
-                if file.filename == '':
+                # No file part - needs to check before accessing the files['file']
+                if 'file' not in request.files:
                     return redirect(request.referrer)
 
-                # Assuming all is good, process and save out the file
-                # TODO:
-                # - Add support for overwriting
-                if file:
-                    filename = secure_filename(file.filename)
-                    full_path = os.path.join(path, filename)
-                    try:
-                        file.save(full_path)
-                    except PermissionError:
-                        abort(403, 'Write Permission Denied: ' + full_path)
+                path = request.form['path']
+                # Prevent file upload to paths outside of base directory
+                if not is_valid_upload_path(path, base_directory):
+                    return redirect(request.referrer)
 
-            return redirect(request.referrer)
+                for file in request.files.getlist('file'):
+
+                    # No filename attached
+                    if file.filename == '':
+                        return redirect(request.referrer)
+
+                    # Assuming all is good, process and save out the file
+                    # TODO:
+                    # - Add support for overwriting
+                    if file:
+                        filename = secure_filename(file.filename)
+                        full_path = os.path.join(path, filename)
+                        try:
+                            file.save(full_path)
+                        except PermissionError:
+                            abort(403, 'Write Permission Denied: ' + full_path)
+
+                return redirect(request.referrer)
+            else:
+                # Uploads are disallowed
+                # TODO: Show some message about uploads disallowed
+                return redirect(request.referrer)
+
 
     # Password functionality is without username
     users = {
