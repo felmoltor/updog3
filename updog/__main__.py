@@ -1,4 +1,5 @@
 import os
+from os.path import basename
 import signal
 import argparse
 
@@ -74,13 +75,15 @@ def main():
     @auth.login_required
     def home(path):
         # If there is a path parameter and it is valid
-        displayed_path = path if path is not None else "."
+        displayed_path = None
         if path and is_valid_subpath(path, base_directory):
             # Take off the trailing '/'
             path = os.path.normpath(path)
             requested_path = os.path.join(base_directory, path)
             if (args.fullpath):
                 displayed_path = requested_path
+            else:
+                displayed_path = path
 
             # If directory
             if os.path.isdir(requested_path):
@@ -104,11 +107,19 @@ def main():
                     mimetype = None
 
                 try:
-                    return send_file(requested_path, mimetype=mimetype, as_attachment=send_as_attachment)
+                    if (args.upload != 'only'):
+                        return send_file(requested_path, mimetype=mimetype, as_attachment=send_as_attachment)
+                    else:
+                        abort(403, 'Only Uploads Available')
                 except PermissionError:
-                    abort(403, 'Read Permission Denied: ' + requested_path)
+                    abort(403, 'Read Permission Denied: ' + path)
 
         else:
+            # update displayed path:
+            if (args.fullpath):
+                displayed_path = base_directory
+            else:
+                displayed_path = path if path is not None else "[ROOT]"
             # Root home configuration
             is_subdirectory = False
             requested_path = base_directory
@@ -125,7 +136,8 @@ def main():
             return render_template('home.html', 
                                    files=directory_files, 
                                    back=back,
-                                   directory=displayed_path, 
+                                   directory=requested_path, 
+                                   displayed_directory=displayed_path, 
                                    is_subdirectory=is_subdirectory, 
                                    upload=args.upload,
                                    version=VERSION)
