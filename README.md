@@ -99,6 +99,5 @@ To allow uploads and downloads:
 
 ## Thanks
 
-To Sc0tfree, the original writer of Updog ()
-A special thank you to [Nicholas Smith](http://nixmith.com) for
-designing the updog logo.
+To Sc0tfree, the original writer of Updog (https://github.com/sc0tfree/updog).
+A special thank you to [Nicholas Smith](http://nixmith.com) for designing the original updog logo. The Updog2 logo is a poor attempt at updating it, sorry, Nicholas, I am not a designer 😭
