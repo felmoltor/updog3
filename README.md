@@ -19,10 +19,10 @@ You need Python3.12.
 
 ```bash
 git clone https://github.com/felmoltor/updog2
-cd updog
+cd updog2
 pipenv install .
 pipenv shell
-which updog # to verify you are using the module installed with pipenv
+which updog2 # to verify you are using the module installed with pipenv
 updog --version
 ```
 
@@ -30,10 +30,12 @@ After this, you do not use `python setup.py install` as it has some errors that 
 
 ## Docker
 
-Install using pip:
+Use docker:
 
-`pip3 install updog2`
-
+```bash
+docker pull -t updog2 ghcr.io/felmoltor/updog2 
+docker run updog2 -h
+```
 
 ## Usage
 
