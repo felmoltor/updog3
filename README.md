@@ -33,9 +33,18 @@ After this, you do not use `python setup.py install` as it has some errors that 
 Use docker:
 
 ```bash
+# If you are not logged in:
+docker login ghcr.io -u <youruser> 
+# Pull latest
 docker pull ghcr.io/felmoltor/updog2:latest
+# If you are using Mac: 
+# docker pull --platform linux/amd64 ghcr.io/felmoltor/updog2:latest
+# Tag it as updog2:
 docker tag ghcr.io/felmoltor/updog2:latest updog2
 docker run updog2 -h
+
+# Run from docker mapping port 443 and your domain's certificates
+docker run  -v $(pwd)/transfer:/transfer -v /etc/letsencrypt/archive/yourdomain.com/:/certs/  updog2 -p 443 --ssl --cert /certs/cert1.pem /certs/privkey1.pem -d /transfer
 ```
 
 ## Usage
