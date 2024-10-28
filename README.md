@@ -9,7 +9,7 @@ Updog2 is a for of Sc0tfree's Updog tool, which was a replacement for Python's `
 It allows uploading and downloading via HTTP/S, can set ad hoc and custom SSL certificates, use HTTP basic auth, and disable upload and download functionality when required.
 
 <p align="center">
-  <img src="updog/static/images/updog2.png" alt="Updog2 Logo" width=150px/>
+  <img src="updog2/static/images/updog2.png" alt="Updog2 Logo" width=150px/>
 </p>
 
 
