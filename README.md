@@ -33,7 +33,8 @@ After this, you do not use `python setup.py install` as it has some errors that 
 Use docker:
 
 ```bash
-docker pull -t updog2 ghcr.io/felmoltor/updog2 
+docker pull ghcr.io/felmoltor/updog2:latest
+docker tag ghcr.io/felmoltor/updog2:latest updog2
 docker run updog2 -h
 ```
 

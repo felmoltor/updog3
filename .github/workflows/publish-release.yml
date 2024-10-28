@@ -38,6 +38,9 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:${{ env.VERSION }}
             ghcr.io/${{ github.repository }}:latest
+          build-args: |
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            GIT_COMMIT=${{ github.sha }}
 
       - name: Verify image pushed to GHCR
         run: echo "Image pushed to ghcr.io/${{ github.repository }}:${{ env.VERSION }}"

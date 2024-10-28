@@ -2,6 +2,10 @@
 # Use an official Python 3.12 image as the base
 FROM python:3.12-slim
 
+# Define build arguments with default values
+ARG BUILD_DATE
+ARG GIT_COMMIT
+
 # Recommended labels for GitHub Registry
 LABEL org.opencontainers.image.source="https://github.com/felmoltor/updog2" \
       org.opencontainers.image.description="A lightweight file server in Python." \
