@@ -9,9 +9,9 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.serving import run_simple
 
-from updog.utils.path import is_valid_subpath, is_valid_upload_path, get_parent_directory, process_files
-from updog.utils.output import error, info, warn, success
-from updog import version as VERSION
+from updog2.utils.path import is_valid_subpath, is_valid_upload_path, get_parent_directory, process_files
+from updog2.utils.output import error, info, warn, success
+from updog2 import version as VERSION
 
 
 def read_write_directory(directory):

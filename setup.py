@@ -1,6 +1,6 @@
 from setuptools import setup
 from os import path
-import updog
+import updog2
 
 
 this_directory = path.abspath(path.dirname(__file__))
@@ -8,17 +8,16 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='updog',
-    version=updog.version,
-    url='https://github.com/sc0tfree/updog',
+    name='updog2',
+    version=updog2.version,
+    url='https://github.com/felmoltor/updog2',
     # GitHub releases in format "updog-X.Y"
-    download_url = 'https://github.com/sc0tfree/updog/archive/updog-' + updog.version + '.tar.gz',
+    download_url = 'https://github.com/felmoltor/updog2/archive/updog-' + updog2.version + '.tar.gz',
     license='MIT',
-    author='sc0tfree',
-    author_email='henry@sc0tfree.com',
-    description='Updog is a replacement for Python\'s SimpleHTTPServer. '
-                'It allows uploading and downloading via HTTP/S, can set '
-                'ad hoc SSL certificates and use http basic auth.',
+    author='felmoltor',
+    author_email='me@felipemolina.com',
+    description='Updog2 is a fork of Sc0tfree\'s Updog tool, which was a replacement for Python\'s SimpleHTTPServer. '
+                'It allows uploading and downloading via HTTP/S, can set ad hoc and custom SSL certificates, use HTTP basic auth, and disable upload and download functionality when required',
     long_description=long_description,
     long_description_content_type='text/markdown',
     keywords='HTTP server SimpleHTTPServer directory',
@@ -45,9 +44,9 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: WSGI',
         'Topic :: Security'
     ],
-    packages=['updog', 'updog.utils'],
+    packages=['updog2', 'updog2.utils'],
     entry_points={
-        'console_scripts': 'updog = updog.__main__:main'
+        'console_scripts': 'updog2 = updog2.__main__:main'
     },
     include_package_data=True,
     install_requires=[

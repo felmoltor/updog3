@@ -1,13 +1,12 @@
 ![Version 1.0](http://img.shields.io/badge/version-v1.1-green.svg)
 ![Python 3.12](http://img.shields.io/badge/python-3.12-blue.svg)
-[![MIT License](http://img.shields.io/badge/license-MIT%20License-blue.svg)](https://github.com/sc0tfree/updog/blob/master/LICENSE)
-[![felmoltor Twitter](http://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow)](https://twitter.com/felmoltor)
-[![sc0tfree Twitter](http://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow)](https://twitter.com/sc0tfree)
+[![MIT License](http://img.shields.io/badge/license-MIT%20License-blue.svg)](./LICENSE)
+[![felmoltor Twitter](http://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow+Felmoltor)](https://twitter.com/felmoltor)
+[![sc0tfree Twitter](http://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow+Sc0tfree)](https://twitter.com/sc0tfree)
 
 
 Updog2 is a for of Sc0tfree's Updog tool, which was a replacement for Python's `SimpleHTTPServer`. 
-It allows uploading and downloading via HTTP/S, 
-can set ad hoc and custom SSL certificates, use HTTP basic auth, and disable upload and download functionality when required.
+It allows uploading and downloading via HTTP/S, can set ad hoc and custom SSL certificates, use HTTP basic auth, and disable upload and download functionality when required.
 
 <p align="center">
   <img src="updog/static/images/updog2.png" alt="Updog2 Logo" width=150px/>
