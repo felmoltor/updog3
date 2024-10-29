@@ -44,7 +44,7 @@ docker tag ghcr.io/felmoltor/updog3:latest updog3
 docker run updog3 -h
 
 # Run from docker mapping port 443 and your domain's certificates
-docker run  -v $(pwd)/transfer:/transfer -v /etc/letsencrypt/archive/yourdomain.com/:/certs/  updog3 -p 443 --ssl --cert /certs/cert1.pem /certs/privkey1.pem -d /transfer
+docker run -p 443:443 -v $(pwd)/transfer:/transfer -v /etc/letsencrypt/archive/yourdomain.com/:/certs/  updog3 -p 443 --ssl --cert /certs/cert1.pem /certs/privkey1.pem -d /transfer
 ```
 
 ## Usage
