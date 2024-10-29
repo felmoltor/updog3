@@ -9,7 +9,7 @@ updog3 is a for of Sc0tfree's Updog tool, which was a replacement for Python's `
 It allows uploading and downloading via HTTP/S, can set ad hoc and custom SSL certificates, use HTTP basic auth, and disable upload and download functionality when required.
 
 <p align="center">
-  <img src="updog3/static/images/updog3.png" alt="updog3 Logo" width=150px/>
+  <img src="updog3/static/images/Updog3.png" alt="updog3 Logo" width=150px/>
 </p>
 
 
@@ -71,7 +71,7 @@ docker run  -v $(pwd)/transfer:/transfer -v /etc/letsencrypt/archive/yourdomain.
 
 **Serve from another directory:**
 
-`updog3 -d /another/directory`
+`updog3 -d /transfer`
 
 **Serve from port 1234:**
 
@@ -91,7 +91,7 @@ enter the password in the password field.
 
 **Use an SSL connection with custom certificates:**
 
-`updog3 --ssl --cert certificate.pem key.pem`
+`updog3 --ssl --cert /certs/certificate.pem /certs/key.pem`
 
 For a LetsEncrypt certificate, the files will be in /etc/letsencrypt/live/[domain]/cert.pem and /etc/letsencrypt/live/[domain]/privatekey.pem (careful, these are just links to ../../archive/ folder, so if you are copying those to another folder, ensure you copy the archive files.)
 
