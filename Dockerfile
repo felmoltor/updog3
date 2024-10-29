@@ -7,16 +7,16 @@ ARG BUILD_DATE
 ARG GIT_COMMIT
 
 # Recommended labels for GitHub Registry
-LABEL org.opencontainers.image.source="https://github.com/felmoltor/updog2" \
+LABEL org.opencontainers.image.source="https://github.com/felmoltor/updog3" \
       org.opencontainers.image.description="A lightweight file server in Python." \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.authors="Felipe Molina de la Torre" \
       org.opencontainers.image.version="0.1.0" \
       org.opencontainers.image.revision="${GIT_COMMIT}" \
       org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.title="Updog2" \
-      org.opencontainers.image.documentation="https://github.com/felmoltor/updog2#readme" \
-      org.opencontainers.image.url="https://github.com/felmoltor/updog2"
+      org.opencontainers.image.title="updog3" \
+      org.opencontainers.image.documentation="https://github.com/felmoltor/updog3#readme" \
+      org.opencontainers.image.url="https://github.com/felmoltor/updog3"
 
 # Set environment variables to prevent pyc files and enable virtual environments
 ENV PYTHONUNBUFFERED=1 \
@@ -33,7 +33,7 @@ RUN apt-get update && \
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the current directory (updog2 project) into the container
+# Copy the current directory (updog3 project) into the container
 COPY . .
 
 # Install dependencies using pipenv
@@ -43,7 +43,7 @@ RUN pipenv install .
 SHELL ["pipenv", "run", "bash", "-c"]
 
 # Verify the installation of updog
-RUN which updog2 && updog2 --version
+RUN which updog3 && updog3 --version
 
 # Define the entry point to allow running updog commands
-ENTRYPOINT ["pipenv", "run", "updog2"]
+ENTRYPOINT ["pipenv", "run", "updog3"]
