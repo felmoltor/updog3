@@ -49,13 +49,14 @@ docker run -p 443:443 -v $(pwd)/transfer:/transfer -v /etc/letsencrypt/archive/y
 
 ## Usage
 
-`updog3 [-d DIRECTORY] [-p PORT] [--password PASSWORD] [--ssl] [--cert certificate.pem key.pem] [--fullpath] [--upload [only, enabled, disabled]]`
+`updog3 [-d DIRECTORY] [-p PORT] [--password PASSWORD] [-i] [--ssl] [--cert certificate.pem key.pem] [--fullpath] [--upload [only, enabled, disabled]]`
 
 | Argument                            | Description                                      |
 |-------------------------------------|--------------------------------------------------| 
 | -d DIRECTORY, --directory DIRECTORY | Root directory [Default=.]                       | 
 | -p PORT, --port PORT                | Port to serve [Default=9090]                     |
 | --password PASSWORD                 | Use a password to access the page. (No username) |
+| -i, --interface                     | IP address of the interface to listen            |
 | --ssl                               | Enable transport encryption via SSL              |
 | --cert                              | Provide your own certificate and key             |
 | --upload                            | Select: only, enabled, disabled                  |
