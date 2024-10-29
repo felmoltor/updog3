@@ -2,6 +2,8 @@ import os
 from os.path import basename
 import signal
 import argparse
+import ipaddress
+import socket
 
 from flask import Flask, render_template, send_file, redirect, request, send_from_directory, url_for, abort
 from flask_httpauth import HTTPBasicAuth
@@ -13,6 +15,19 @@ from updog3.utils.path import is_valid_subpath, is_valid_upload_path, get_parent
 from updog3.utils.output import error, info, warn, success
 from updog3 import version as VERSION
 
+def validate_ip(ip):
+    try:
+        # Check if the IP address is valid
+        ip_obj = ipaddress.ip_address(ip)
+    except ValueError:
+        return False, "Invalid IP address format."
+
+    # Attempt to resolve the IP to verify it exists on the network
+    try:
+        socket.gethostbyaddr(str(ip_obj))
+        return True, "IP address is reachable."
+    except socket.herror:
+        return False, "IP address is unreachable or does not exist."
 
 def read_write_directory(directory):
     if os.path.exists(directory):
@@ -33,6 +48,7 @@ def parse_arguments():
     parser.add_argument('-p', '--port', type=int, default=9090,
                         help='Port to serve [Default=9090]')
     parser.add_argument('--password', type=str, default='', help='Use a password to access the page. (No username)')
+    parser.add_argument('-i', '--interface', type=str, default='0.0.0.0', help='IP address of the interface to listen')
     parser.add_argument('--ssl', action='store_true', help='Use an encrypted connection')
     parser.add_argument('--fullpath', action='store_true', help='Display the full path of the folder uploading to',default=False)
     parser.add_argument('--upload', choices=['only','enabled','disabled'], help='Upload mode: only, enabled, disabled (default: enabled)', default='enabled')
@@ -45,6 +61,12 @@ def parse_arguments():
     )
 
     args = parser.parse_args()
+
+    # Check the interface exists
+    valid, err = validate_ip(args.interface)
+    if (not valid):
+        print(f"Error. Interface {args.interface} - {err}. Using 0.0.0.0 instead.")
+        args.interface = '0.0.0.0'
 
     # Normalize the path
     args.directory = os.path.abspath(args.directory)
@@ -219,7 +241,7 @@ def main():
             # Default to 'adhoc' if no cert is provided
             ssl_context = 'adhoc'
 
-    run_simple("0.0.0.0", int(args.port), app, ssl_context=ssl_context)
+    run_simple(args.interface, int(args.port), app, ssl_context=ssl_context)
 
 
 if __name__ == '__main__':
