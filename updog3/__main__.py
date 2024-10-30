@@ -9,7 +9,7 @@ import tempfile
 
 from flask import Flask, render_template, send_file, redirect, request, send_from_directory, url_for, abort
 from flask_httpauth import HTTPBasicAuth
-from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_name
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.serving import run_simple
 
@@ -52,6 +52,7 @@ def parse_arguments():
     parser.add_argument('--password', type=str, default='', help='Use a password to access the page. (No username)')
     parser.add_argument('-i', '--interface', type=str, default='0.0.0.0', help='IP address of the interface to listen')
     parser.add_argument('--ssl', action='store_true', help='Use an encrypted connection')
+    parser.add_argument('-D','--createdir', action='store_true', help='Allow directory creation from the web interface',default=False)
     parser.add_argument('--fullpath', action='store_true', help='Display the full path of the folder uploading to',default=False)
     parser.add_argument('--upload', choices=['only','enabled','disabled'], help='Upload mode: only, enabled, disabled (default: enabled)', default='enabled')
     parser.add_argument('--version', action='version', version='%(prog)s v'+VERSION)
@@ -123,27 +124,10 @@ def main():
     @app.route('/download-zip/<path:path>')
     @auth.login_required
     def download_zip(path):
-        
-        displayed_path = base_directory if path is None else path
         requested_path = os.path.join(base_directory, path) if path else base_directory
-        back_directory = get_parent_directory(requested_path, base_directory)
-        directory_files = process_files(os.scandir(requested_path), base_directory)
-        is_subdirectory = True
-
-        requested_path = os.path.join(base_directory, path)
         if os.path.isdir(requested_path):
             zip_path = create_zip_archive(requested_path)  # Your function to create the ZIP file
             return send_file(zip_path, as_attachment=True)
-            return render_template(
-                            'home.html',
-                            files=directory_files,
-                            back=back_directory,
-                            directory=requested_path,
-                            displayed_directory=displayed_path,
-                            is_subdirectory=is_subdirectory,
-                            upload=args.upload,
-                            version=VERSION
-                        )
         else:
             abort(403)
 
@@ -151,6 +135,7 @@ def main():
     @app.route('/<path:path>')
     @auth.login_required
     def home(path):
+        big_folder_size_mb = 10
         # Ensure `displayed_path` and `requested_path` are initialized
         displayed_path = base_directory if path is None else path
         requested_path = os.path.join(base_directory, path) if path else base_directory
@@ -176,8 +161,11 @@ def main():
 
                     # Handle zip download prompt
                     if request.args.get('downloadzip') is not None:
-                        show_download_prompt = True
+                        show_download_prompt = False
+                        download_folder=True
                         folder_size = get_folder_size(requested_path)
+                        if (folder_size >= (big_folder_size_mb * 1024**2)):
+                            show_download_prompt = True
 
                         # Render template with prompt
                         return render_template(
@@ -189,9 +177,11 @@ def main():
                             is_subdirectory=is_subdirectory,
                             upload=args.upload,
                             version=VERSION,
+                            download_folder=download_folder,
                             show_download_prompt=show_download_prompt,
                             folder_size=folder_size,
-                            folder_size_mb=round((folder_size/1024**2),2)
+                            folder_size_mb=round((folder_size/1024**2),2),
+                            createdir=args.createdir
                         )
                     else:
                         # User is navigating to a subdirectory
@@ -204,7 +194,8 @@ def main():
                             displayed_directory=displayed_path,
                             is_subdirectory=is_subdirectory,
                             upload=args.upload,
-                            version=VERSION
+                            version=VERSION,
+                            createdir=args.createdir
                         )
 
                 # Handle file download
@@ -235,8 +226,32 @@ def main():
             displayed_directory='[ROOT]' if path is None else path,
             is_subdirectory=False,
             upload=args.upload,
-            version=VERSION
+            version=VERSION,
+            createdir=args.createdir
         )
+
+    ##################################
+    # Create Directory Functionality #
+    ##################################
+    @app.route('/createdir', methods=['POST'])
+    @auth.login_required
+    def createdir():
+        if request.method == 'POST':
+            dirname = request.form['dirname']
+            secure_dirname = secure_name(dirname)
+            full_path = os.path.join(base_directory, secure_dirname)
+
+            # Prevent file upload to paths outside of base directory
+            if not is_valid_subpath(full_path, base_directory):
+                print(f"Not creating directory {dirname}")
+                return redirect(request.referrer)
+            else:
+                print(f"Creating directory {full_path}")
+                os.mkdir(full_path)
+                return redirect(request.referrer)
+        else:
+            return abort(403)
+
 
     #############################
     # File Upload Functionality #
@@ -266,7 +281,7 @@ def main():
                     # TODO:
                     # - Add support for overwriting
                     if file:
-                        filename = secure_filename(file.filename)
+                        filename = secure_name(file.filename)
                         full_path = os.path.join(path, filename)
                         try:
                             file.save(full_path)
