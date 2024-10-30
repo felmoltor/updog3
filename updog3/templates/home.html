@@ -17,6 +17,33 @@
 <body>
 <div class="conn">
 
+    {% if (show_download_prompt and folder_size and folder_size_mb) %}
+    <script>
+        function downloadAndRedirect(downloadUrl, redirectUrl) {
+            const anchor = document.createElement('a');
+            anchor.href = downloadUrl;
+            anchor.target = '_blank';
+            anchor.download = ''; // Triggers the download
+            anchor.click();
+            // Redirect to the referrer URL after initiating the download
+            window.location.href = redirectUrl;
+        }
+        
+        function DownloadPrompt() {
+            const confirmDownload = confirm("The folder size is {{ folder_size }} bytes ({{ folder_size_mb }} Mb). Do you want to download it as a ZIP file? Large folders will take time to compress");
+            if (confirmDownload) {
+                // Redirect to download the folder as ZIP
+                // window.location.href = "{{ url_for('download_zip', path=displayed_directory) }}";
+                downloadAndRedirect("{{ url_for('download_zip', path=displayed_directory) }}", "/{{displayed_directory}}"); // document.referrer)
+            }
+            else {
+                window.location.href = "/{{displayed_directory}}";
+            }
+        }
+        DownloadPrompt()
+    </script>
+    {% endif %}
+
     <!-- Header -->
     <header id="header" class="d-flex align_item_center">
         <div onclick="document.location='/'" class="logo_p">
@@ -74,6 +101,7 @@
                     <th>Name</th>
                     <th>Size</th>
                     <th>Last Modified</th>
+                    <th></th> <!-- Download as zip -->
                     <th></th> <!-- View file -->
                 </tr>
                 </thead>
@@ -97,8 +125,13 @@
                         {{ file.last_modified }}
                     </td>
                     <td> <!-- View file -->
+                        {% if file.is_dir %}
+                        <a href="/{{ file.rel_path }}?downloadzip=1">Download as zip</a>
+                        {% endif %}
+                    </td>
+                    <td> <!-- View file -->
                         {% if not file.is_dir %}
-                        <a href="/{{ file.rel_path }}?view">View in browser</a>
+                        <a href="/{{ file.rel_path }}?view=1">View in browser</a>
                         {% endif %}
                     </td>
                 </tr>

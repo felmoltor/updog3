@@ -4,6 +4,8 @@ import signal
 import argparse
 import ipaddress
 import socket
+import zipfile
+import tempfile
 
 from flask import Flask, render_template, send_file, redirect, request, send_from_directory, url_for, abort
 from flask_httpauth import HTTPBasicAuth
@@ -73,6 +75,32 @@ def parse_arguments():
 
     return args
 
+import os
+
+def get_folder_size(folder_path, size_limit_mb=100):
+    size_limit = size_limit_mb * 1024 * 1024  # Convert MB to bytes
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(folder_path):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            if os.path.isfile(file_path):
+                total_size += os.path.getsize(file_path)
+                # Break the loop if the size exceeds the limit
+                if total_size >= size_limit:
+                    return total_size
+    return total_size
+
+def create_zip_archive(folder_path):
+    # Create a temporary file for the ZIP archive
+    zip_path = tempfile.mktemp(suffix='.zip')  # Create a temp file path ending in .zip
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        # Walk through the folder and add each file to the zip
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                # Add the file to the zip, with a path relative to `folder_path`
+                zip_file.write(file_path, os.path.relpath(file_path, folder_path))
+    return zip_path
 
 def main():
     args = parse_arguments()
@@ -92,79 +120,123 @@ def main():
     ############################################
     # File Browsing and Download Functionality #
     ############################################
+    @app.route('/download-zip/<path:path>')
+    @auth.login_required
+    def download_zip(path):
+        
+        displayed_path = base_directory if path is None else path
+        requested_path = os.path.join(base_directory, path) if path else base_directory
+        back_directory = get_parent_directory(requested_path, base_directory)
+        directory_files = process_files(os.scandir(requested_path), base_directory)
+        is_subdirectory = True
+
+        requested_path = os.path.join(base_directory, path)
+        if os.path.isdir(requested_path):
+            zip_path = create_zip_archive(requested_path)  # Your function to create the ZIP file
+            return send_file(zip_path, as_attachment=True)
+            return render_template(
+                            'home.html',
+                            files=directory_files,
+                            back=back_directory,
+                            directory=requested_path,
+                            displayed_directory=displayed_path,
+                            is_subdirectory=is_subdirectory,
+                            upload=args.upload,
+                            version=VERSION
+                        )
+        else:
+            abort(403)
+
     @app.route('/', defaults={'path': None})
     @app.route('/<path:path>')
     @auth.login_required
     def home(path):
-        # If there is a path parameter and it is valid
-        displayed_path = None
+        # Ensure `displayed_path` and `requested_path` are initialized
+        displayed_path = base_directory if path is None else path
+        requested_path = os.path.join(base_directory, path) if path else base_directory
+
+        # If path is provided and valid, normalize and verify existence
         if path and is_valid_subpath(path, base_directory):
-            # Take off the trailing '/'
             path = os.path.normpath(path)
             requested_path = os.path.join(base_directory, path)
-            if (args.fullpath):
-                displayed_path = requested_path
-            else:
-                displayed_path = path
 
-            # If directory
-            if os.path.isdir(requested_path):
-                back = get_parent_directory(requested_path, base_directory)
-                is_subdirectory = True
+            if os.path.exists(requested_path):
+                # Check if the requested path is a directory
+                if os.path.isdir(requested_path):
+                    try:
+                        # Process files in directory
+                        directory_files = process_files(os.scandir(requested_path), base_directory)
+                        displayed_path = requested_path if args.fullpath else path
+                    
+                    except PermissionError:
+                        abort(403, 'Read Permission Denied: ' + requested_path)
+                        
+                    back_directory = get_parent_directory(requested_path, base_directory)
+                    is_subdirectory = True
 
-            # If file
-            elif os.path.isfile(requested_path):
+                    # Handle zip download prompt
+                    if request.args.get('downloadzip') is not None:
+                        show_download_prompt = True
+                        folder_size = get_folder_size(requested_path)
 
-                # Check if the view flag is set
-                if request.args.get('view') is None:
-                    send_as_attachment = True
-                else:
-                    send_as_attachment = False
+                        # Render template with prompt
+                        return render_template(
+                            'home.html',
+                            files=directory_files,
+                            back=back_directory,
+                            directory=requested_path,
+                            displayed_directory=displayed_path,
+                            is_subdirectory=is_subdirectory,
+                            upload=args.upload,
+                            version=VERSION,
+                            show_download_prompt=show_download_prompt,
+                            folder_size=folder_size,
+                            folder_size_mb=round((folder_size/1024**2),2)
+                        )
+                    else:
+                        # User is navigating to a subdirectory
+                        # Render template with prompt
+                        return render_template(
+                            'home.html',
+                            files=directory_files,
+                            back=back_directory,
+                            directory=requested_path,
+                            displayed_directory=displayed_path,
+                            is_subdirectory=is_subdirectory,
+                            upload=args.upload,
+                            version=VERSION
+                        )
 
-                # Check if file extension
-                (filename, extension) = os.path.splitext(requested_path)
-                if extension == '':
-                    mimetype = 'text/plain'
-                else:
-                    mimetype = None
-
-                try:
-                    if (args.upload != 'only'):
+                # Handle file download
+                elif os.path.isfile(requested_path):
+                    send_as_attachment = request.args.get('view') is None
+                    mimetype = 'text/plain' if os.path.splitext(requested_path)[1] == '' else None
+                    if args.upload != 'only':
                         return send_file(requested_path, mimetype=mimetype, as_attachment=send_as_attachment)
                     else:
                         abort(403, 'Only Uploads Available')
-                except PermissionError:
-                    abort(403, 'Read Permission Denied: ' + path)
 
-        else:
-            # update displayed path:
-            if (args.fullpath):
-                displayed_path = base_directory
             else:
-                displayed_path = path if path is not None else "[ROOT]"
-            # Root home configuration
-            is_subdirectory = False
-            requested_path = base_directory
-            back = ''
+                # Redirect to root if path does not exist
+                return redirect('/')
 
-        if os.path.exists(requested_path):
-            # Read the files
-            try:
-                directory_files = process_files(os.scandir(requested_path), base_directory)
-            except PermissionError:
-                abort(403, 'Read Permission Denied: ' + requested_path)
+        # Default behavior when accessing the root or invalid path
+        try:
+            directory_files = process_files(os.scandir(base_directory), base_directory)
+        except PermissionError:
+            abort(403, 'Read Permission Denied: ' + base_directory)
 
-            print("Upload: "+ args.upload)
-            return render_template('home.html', 
-                                   files=directory_files, 
-                                   back=back,
-                                   directory=requested_path, 
-                                   displayed_directory=displayed_path, 
-                                   is_subdirectory=is_subdirectory, 
-                                   upload=args.upload,
-                                   version=VERSION)
-        else:
-            return redirect('/')
+        # Render root directory template
+        return render_template(
+            'home.html',
+            files=directory_files,
+            back='',
+            directory=base_directory,
+            displayed_directory='[ROOT]' if path is None else path,
+            is_subdirectory=False,
+            upload=args.upload,
+            version=VERSION
+        )
 
     #############################
     # File Upload Functionality #
