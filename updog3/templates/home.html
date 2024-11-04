@@ -14,10 +14,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.min.css') }}">
 </head>
 
+
 <body>
 <div class="conn">
-
-    
     {% if download_folder and show_download_prompt %}
     <script>
         function downloadAndRedirect(downloadUrl, redirectUrl) {
@@ -73,6 +72,19 @@
         </div>
     </header>
 
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                    <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
     {% if upload != 'disabled' %}
     <!-- ----- Upload Form ----- -->
     <div class="inputUploadP">
@@ -100,21 +112,11 @@
 
     {% if createdir == True %}
     <!-- ----- Mkdir Form ----- -->
-    <div class="createdir">
-        <form method="post" action="/createdir" enctype="multipart/form-data" class="uploadForm">
-            <!-- -- Dir Name -- -->
-            <div class="dirName_div">
-                <input type="text" name="dirname" id="dirname" class="dirName"/>
-                <label for="dirname">
-                    Directory Name
-                </label>
-            </div>
-            <!-- -- Mkdir Btn -- -->
-            <p class="mkdirBtn_P">
-                <button type="submit" class="mkdirBtn btn btn-primary">
-                    Create
-                </button>
-            </p>
+    <div class="inputUploadP">
+        <form method="post" action="/createdir" enctype="multipart/form-data" class="uploadFile_P">
+            <input type="text" class="uploadFile" placeholder="New folder name" id="dirname" name="dirname" style="border: 1px solid;"/>
+            <input type="hidden" name="path" value="{{ directory }}">
+            <input type="submit" class="uploadBtn btn btn-primary" value="Create Folder"></button>
         </form>
     </div>
     {% endif %}

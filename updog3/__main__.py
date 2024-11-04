@@ -7,7 +7,7 @@ import socket
 import zipfile
 import tempfile
 
-from flask import Flask, render_template, send_file, redirect, request, send_from_directory, url_for, abort
+from flask import Flask, render_template, send_file, redirect, request, send_from_directory, url_for, abort, flash
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.utils import secure_name
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -107,6 +107,8 @@ def main():
     args = parse_arguments()
 
     app = Flask(__name__)
+    app.secret_key = b'LIknd8K44Q12`ks-0Iyh2[?hauid-dkLassLh]'
+
     auth = HTTPBasicAuth()
 
     global base_directory
@@ -237,20 +239,36 @@ def main():
     @auth.login_required
     def createdir():
         if request.method == 'POST':
-            dirname = request.form['dirname']
-            secure_dirname = secure_name(dirname)
-            full_path = os.path.join(base_directory, secure_dirname)
+            path = request.form.get('path')
+            dirname = request.form.get('dirname')
 
-            # Prevent file upload to paths outside of base directory
+            if not dirname:
+                flash("Please enter a directory name.", "error")
+                return redirect(request.referrer)
+            
+            secure_dirname = secure_name(dirname)
+            secure_path = os.path.join(path, secure_dirname)
+            full_path = os.path.join(base_directory, secure_path)
+
+            # Prevent directory creation outside of base directory
             if not is_valid_subpath(full_path, base_directory):
-                print(f"Not creating directory {dirname}")
+                flash(f"Cannot create directory {dirname}: Invalid path.", "danger")
                 return redirect(request.referrer)
-            else:
-                print(f"Creating directory {full_path}")
+            
+            try:
                 os.mkdir(full_path)
-                return redirect(request.referrer)
+                # flash(f"Directory '{dirname}' created successfully.", "success")
+            except FileExistsError:
+                flash(f"Directory '{dirname}' already exists.", "danger")
+            except PermissionError:
+                flash(f"Permission denied to create directory '{dirname}'.", "danger")
+            except Exception as e:
+                flash(f"Failed to create directory '{dirname}': {str(e)}", "danger")
+
+            return redirect(request.referrer)
         else:
             return abort(403)
+
 
 
     #############################
