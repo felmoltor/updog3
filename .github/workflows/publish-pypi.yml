@@ -22,9 +22,9 @@ jobs:
       id: extract_version
       run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
-    - name: Update package version
-      run: |
-        sed -i "s/^version = .*/version = '${{ env.version }}'/" setup.py
+    # - name: Update package version
+    #   run: |
+    #     sed -i "s/^version = .*/version = '${{ env.version }}'/" setup.py
 
     - name: Install build dependencies
       run: |

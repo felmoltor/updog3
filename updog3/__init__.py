@@ -1,4 +1,5 @@
-version_info = (1,2)
-version = '.'.join(str(c) for c in version_info)
+# Version is coming from the last release tag in github
+# replaced during build
+version = '$$VERSION$$' 
 
 base_directory = ''

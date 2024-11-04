@@ -178,3 +178,4 @@ Pipfile.lock
 *.pem
 .vscode/*
 test*
+.DS_Store
