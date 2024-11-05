@@ -48,6 +48,9 @@ setup(
     entry_points={
         'console_scripts': 'updog3 = updog3.__main__:main'
     },
+    package_data={
+        "updog3": ["../version"]
+    },
     include_package_data=True,
     install_requires=[
         'colorama',

@@ -37,13 +37,13 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies using pipenv
-RUN pipenv lock && pipenv install .
+RUN pipenv install .
 
 # Make sure pipenv shell uses the correct Python environment
 SHELL ["pipenv", "run", "bash", "-c"]
 
 # Verify the installation of updog
-RUN which updog3 && updog3 --version
+RUN updog3 --version
 
 # Define the entry point to allow running updog commands
 ENTRYPOINT ["pipenv", "run", "updog3"]

@@ -9,6 +9,7 @@ flask = "*"
 flask-httpauth = "*"
 werkzeug = "*"
 pyopenssl = "*"
+updog3 = {file = "."}
 
 [dev-packages]
 
