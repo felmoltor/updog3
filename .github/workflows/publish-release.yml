@@ -31,6 +31,7 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           echo $VERSION > version  # Overwrite the content of the version file with the tag version without "v"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "cat version is: $(cat version)"
 
       - name: Build and push Docker image for multi-platform
         uses: docker/build-push-action@v5
@@ -67,6 +68,7 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           echo $VERSION > version  # Overwrite the content of the version file with the tag version without "v"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "cat version is: $(cat version)"
 
       - name: Install build dependencies
         run: |
