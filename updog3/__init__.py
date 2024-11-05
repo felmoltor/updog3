@@ -1,5 +1,4 @@
-# Version is coming from the last release tag in github
-# replaced during build
-version = '$$VERSION$$' 
+# Version is coming from the file version
+version = 'v'+open('../version','r').read().strip()
 
 base_directory = ''
