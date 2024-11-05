@@ -33,7 +33,9 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       
       - name: Display updated version
-        run: cat version
+        run: |
+          cat version
+          echo "VERSION=$VERSION"
 
       - name: Build and push Docker image for multi-platform
         uses: docker/build-push-action@v5
@@ -72,7 +74,9 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       
       - name: Display updated version
-        run: cat version
+        run: |
+          cat version
+          echo "VERSION=$VERSION"
 
       - name: Install build dependencies
         run: |

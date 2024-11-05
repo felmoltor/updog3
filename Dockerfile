@@ -37,7 +37,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies using pipenv
-RUN pipenv install .
+RUN pipenv lock && pipenv install .
 
 # Make sure pipenv shell uses the correct Python environment
 SHELL ["pipenv", "run", "bash", "-c"]
