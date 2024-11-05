@@ -31,8 +31,8 @@ jobs:
 
       - name: Replace version in files
         run: |
-          sed -i "s/\\$\\$VERSION\\$\\$/${{ env.VERSION }}/g" updog3/__init__.py
-          sed -i "s/\\$\\$VERSION\\$\\$/${{ env.VERSION }}/g" setup.py
+          sed -i 's/\$\$VERSION\$\$/'"${{ env.VERSION }}"'/g' updog3/__init__.py
+          sed -i 's/\$\$VERSION\$\$/'"${{ env.VERSION }}"'/g' setup.py
         shell: bash
 
       - name: Build and push Docker image for multi-platform
