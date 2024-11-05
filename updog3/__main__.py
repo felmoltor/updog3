@@ -9,7 +9,7 @@ import tempfile
 
 from flask import Flask, render_template, send_file, redirect, request, send_from_directory, url_for, abort, flash
 from flask_httpauth import HTTPBasicAuth
-from werkzeug.utils import secure_name
+from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.serving import run_simple
 
@@ -246,7 +246,7 @@ def main():
                 flash("Please enter a directory name.", "error")
                 return redirect(request.referrer)
             
-            secure_dirname = secure_name(dirname)
+            secure_dirname = secure_filename(dirname)
             secure_path = os.path.join(path, secure_dirname)
             full_path = os.path.join(base_directory, secure_path)
 
@@ -299,7 +299,7 @@ def main():
                     # TODO:
                     # - Add support for overwriting
                     if file:
-                        filename = secure_name(file.filename)
+                        filename = secure_filename(file.filename)
                         full_path = os.path.join(path, filename)
                         try:
                             file.save(full_path)

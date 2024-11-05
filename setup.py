@@ -9,10 +9,10 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='updog3',
-    version='$$VERSION$$',
+    version=updog3.version,
     url='https://github.com/felmoltor/updog3',
     # GitHub releases in format "updog-X.Y"
-    download_url = 'https://github.com/felmoltor/updog3/archive/updog-$$VERSION$$.tar.gz',
+    download_url = 'https://github.com/felmoltor/updog3/archive/updog-'+updog3.version+'.tar.gz',
     license='MIT',
     author='felmoltor',
     author_email='me@felipemolina.com',
