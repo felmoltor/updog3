@@ -179,3 +179,4 @@ Pipfile.lock
 .vscode/*
 test*
 .DS_Store
+release.sh
