@@ -12,6 +12,14 @@ It allows uploading and downloading via HTTP/S, can set ad hoc and custom SSL ce
   <img src="updog3/static/images/Updog3.png" alt="updog3 Logo" width=150px/>
 </p>
 
+### Installation from pypi
+The easiest way:
+
+```bash
+pip install updog3
+updog3 --version && updog3 -h
+```
+
 
 ### Installation from source with pipenv
 
