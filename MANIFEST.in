@@ -1,3 +1,4 @@
 graft updog3/static
 graft updog3/templates
+include version
 global-exclude *.pyc
