@@ -114,7 +114,7 @@
     <!-- ----- Mkdir Form ----- -->
     <div class="inputUploadP">
         <form method="post" action="/createdir" enctype="multipart/form-data" class="uploadFile_P">
-            <input type="text" class="uploadFile" placeholder="New folder name" id="dirname" name="dirname" style="border: 1px solid;"/>
+            <input type="text" class="uploadFile" placeholder="New folder name" id="dirname" name="dirname" style="border-radius: 5px; padding: 5px; border: 1px solid #ccc;"/>
             <input type="hidden" name="path" value="{{ directory }}">
             <input type="submit" class="uploadBtn btn btn-primary" value="Create Folder"></button>
         </form>
@@ -188,7 +188,7 @@
 
     <footer>
         <p>
-            updog3 v{{ version }}
+            updog3 {{ version }}
         </p>
     </footer>
 
